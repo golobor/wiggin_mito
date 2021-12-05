@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 class AddBackboneTethering(SimAction):
     k: float=15  
 
-    _shared = dict(backbone=None)
+    _reads_shared = ['backbone']
 
     def run_init(self, sim):
         # do not use self.params!
@@ -43,7 +43,7 @@ class AddBackboneTethering(SimAction):
 class AddBackboneAngularTethering(SimAction):
     angle_wiggle: float = np.pi / 16
 
-    _shared = dict(backbone=None)        
+    _reads_shared = ['backbone']
 
     def run_init(self, sim):
         # do not use self.params!
@@ -65,7 +65,7 @@ class AddBackboneAngularTethering(SimAction):
 class AddRootLoopAngularTethering(SimAction):
     angle_wiggle: float = np.pi / 16
 
-    _shared = dict('loops')
+    _reads_shared = ['loops']
 
     def run_init(self, sim):
         # do not use self.params!
@@ -91,9 +91,7 @@ class AddTipsTethering(SimAction):
     k: Union[float, Tuple[float, float, float]] = (0, 0, 5)
     particles: Sequence[int] = (0, -1)
     positions: Any = "current"
-    
-    _shared = dict()    
-        
+            
 
     def run_init(self, sim):
         # do not use self.params!
@@ -117,11 +115,9 @@ class AddStaticCylinderCompression(SimAction):
     r: Optional[float] = None 
     per_particle_volume: Optional[float] =1.5 * 1.5 * 1.0
         
-    _shared = dict(N=None, initial_conformation=None, backbone=None)
-        
+    _reads_shared = ['N', 'backbone', 'initial_conformation']
 
     def configure(self):
-        out_shared = {}
 
         if (self.z_min is None) != (self.z_max is None):
             raise ValueError(
@@ -163,7 +159,7 @@ class AddStaticCylinderCompression(SimAction):
                 / np.pi
             )
 
-        return out_shared
+        return {}
 
     def run_init(self, sim):
         # do not use self.params!

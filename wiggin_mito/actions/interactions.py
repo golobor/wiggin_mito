@@ -24,7 +24,7 @@ class AddLoops(SimAction):
     wiggle_dist: float = 0.05
     bond_length: float = 1.0
 
-    _shared = dict(loops=None)
+    _reads_shared = ['loops']
 
 
     def run_init(self, sim):
@@ -47,8 +47,7 @@ class AddLoops(SimAction):
 class AddRootLoopSeparator(SimAction):
     wiggle_dist: float = 0.1
 
-    _shared = dict(loops=None)
-
+    _reads_shared = ['loops']
 
     def run_init(self, sim):
         # do not use self.params!
@@ -75,7 +74,7 @@ class AddRootLoopSeparator(SimAction):
 class AddBackboneStiffness(SimAction):
     k: float = 1.5
 
-    _shared = dict(backbone=None)
+    _reads_shared = ['backbone']
         
 
     def run_init(self, sim):

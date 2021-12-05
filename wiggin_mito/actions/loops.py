@@ -27,7 +27,8 @@ class GenerateSingleLayerLoops(SimAction):
     loop_spacing: int = 1
     chain_idxs: Optional[Sequence[int]] =  None
 
-    _shared = dict(N=None, chains=None)
+    _reads_shared = ['N', 'chains']
+    _writes_shared = ['loops', 'backbone']
 
     def configure(self):
         out_shared = {}
@@ -101,7 +102,9 @@ class GenerateTwoLayerLoops(SimAction):
     inner_loop_gamma_k: float = 1
     outer_loop_gamma_k: float = 1
             
-    _shared = dict(N=None)
+    _reads_shared = ['N']
+    _writes_shared = ['loops', 'backbone']
+
         
     def configure(self):
         out_shared = {}

@@ -13,7 +13,7 @@ class CrosslinkParallelChains(SimAction):
     bond_length: float = 1.0
     wiggle_dist: float = 0.025
 
-    _shared = dict(N=None)
+    _reads_shared = ['N']
 
     def configure(self):
         if self.chains is None:

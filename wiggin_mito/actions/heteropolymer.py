@@ -21,7 +21,8 @@ logging.basicConfig(level=logging.INFO)
 class GenerateRandomBlockParticleTypes(SimAction):
     avg_block_lens: Sequence[int] = (2, 2)
     
-    _shared = dict(N=None)
+    _reads_shared = ['N']
+    _writes_shared = ['particle_types']
 
 
     def configure(self):
@@ -59,7 +60,7 @@ class AddChainsSelectiveRepAttr(SimAction):
     particle_types: Any = None
     except_bonds: bool = False
     
-    _shared = dict()
+    _writes_shared = ['chains']
         
 
     def configure(self):
@@ -125,7 +126,9 @@ class AddChainsHeteropolymerRepAttr(SimAction):
     particle_types: Any = None
     except_bonds: bool = False
     
-    _shared = dict()        
+    _reads_shared = ['particle_types']
+    _writes_shared = ['chains']
+
 
     def configure(self):
         out_shared = {}
