@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 import logging
-from typing import Union, Tuple, Sequence, Any, Optional
+from typing import Sequence, Optional # noqa: F401
 
 import numpy as np
-
-from .. import forces
 
 from wiggin.core import SimAction
 
@@ -13,19 +11,15 @@ import looplib.looptools
 import looplib.random_loop_arrays
 
 
-import polychrom
-import polychrom.forces
-
-
 logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
-class GenerateSingleLayerLoops(SimAction):
+class SingleLayerLoopPositions(SimAction):
     loop_size: float = 400
     loop_gamma_k: float = 1
     loop_spacing: int = 1
-    chain_idxs: Optional[Sequence[int]] =  None
+    chain_idxs: Optional[Sequence[int]] = None
 
     _reads_shared = ['N', 'chains']
     _writes_shared = ['loops', 'backbone']
@@ -33,27 +27,19 @@ class GenerateSingleLayerLoops(SimAction):
     def configure(self):
         out_shared = {}
 
-
-        if self.chain_idxs is None:
-            if "loop_n" in self.params:
-                N = self.loop_n * self.loop_size
-                out_shared["N"] = N
-            else:
-                N = self._shared["N"]
-            chains = [(0, N, False)]
-
+        if hasattr(self.chain_idxs, "__iter__"):
+            chains = [
+                self._shared["chains"][i] for i in self.chain_idxs
+            ]
+        elif self.chain_idxs is None:
+            chains = self._shared['chains']
         else:
-            if "chains" not in self._shared:
-                raise ValueError("Chains are not configured!")
-            if hasattr(self.chain_idxs, "__iter__"):
-                chains = [
-                    self._shared["chains"][i] for i in self.chain_idxs
-                ]
-            else:
-                chains = [self._shared["chains"][int(self.chain_idxs)]]
+            chains = [self._shared["chains"][int(self.chain_idxs)]]
 
         loops = []
         for start, end, is_ring in chains:
+            if end is None:
+                end = self._shared['N']
             chain_len = end - start
             if self.loop_gamma_k == 1:
                 loops.append(
@@ -84,7 +70,7 @@ class GenerateSingleLayerLoops(SimAction):
 
         try:
             out_shared["backbone"] = looplib.looptools.get_backbone(
-                out_shared["loops"], N=N
+                out_shared["loops"], N = self._shared['N']
             )
         except Exception:
             out_shared["backbone"] = None
@@ -93,7 +79,7 @@ class GenerateSingleLayerLoops(SimAction):
 
 
 @dataclass
-class GenerateTwoLayerLoops(SimAction):
+class TwoLayerLoopPositions(SimAction):
     inner_loop_size: int = 400
     outer_loop_size: int = 400 * 4
     inner_loop_spacing: int = 1
@@ -109,14 +95,7 @@ class GenerateTwoLayerLoops(SimAction):
     def configure(self):
         out_shared = {}
 
-        if "outer_loop_n" in self.params:
-            N = self.outer_loop_n * self.outer_loop_size
-            out_shared["N"] = N
-        elif "inner_loop_n" in self.params:
-            N = self.inner_loop_n * self.inner_loop_size
-            out_shared["N"] = N
-        else:
-            N = self._shared["N"]
+        N = self._shared["N"]
 
         (
             outer_loops,

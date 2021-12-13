@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from typing import Union, Tuple, Sequence, Any, Optional
+from typing import Union, Tuple, Sequence, Any, Optional # noqa: F401
 
 import numpy as np
 
@@ -18,14 +18,13 @@ import polychrom.forces
 logging.basicConfig(level=logging.INFO)
 
 
-
 @dataclass
-class AddLoops(SimAction):
-    wiggle_dist: float = 0.05
+class HarmonicLoops(SimAction):
+    wiggle_dist: float = 0.25
     bond_length: float = 1.0
 
     _reads_shared = ['loops']
-
+    
 
     def run_init(self, sim):
         # do not use self.params!
@@ -44,8 +43,8 @@ class AddLoops(SimAction):
 
 
 @dataclass
-class AddRootLoopSeparator(SimAction):
-    wiggle_dist: float = 0.1
+class RootLoopSeparator(SimAction):
+    wiggle_dist: float = 0.25
 
     _reads_shared = ['loops']
 
@@ -71,7 +70,7 @@ class AddRootLoopSeparator(SimAction):
 
 
 @dataclass
-class AddBackboneStiffness(SimAction):
+class BackboneStiffness(SimAction):
     k: float = 1.5
 
     _reads_shared = ['backbone']

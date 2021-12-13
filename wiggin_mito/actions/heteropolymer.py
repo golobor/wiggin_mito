@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import logging
 import numbers
-from typing import Union, Tuple, Sequence, Any, Optional
+from typing import Union, Tuple, Sequence, Any, Optional # noqa: F401
 
 import numpy as np
 
@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
-class GenerateRandomBlockParticleTypes(SimAction):
+class RandomBlockParticleTypes(SimAction):
     avg_block_lens: Sequence[int] = (2, 2)
     
     _reads_shared = ['N']
@@ -48,12 +48,12 @@ class GenerateRandomBlockParticleTypes(SimAction):
 
 
 @dataclass
-class AddChainsSelectiveRepAttr(SimAction):
-    chains: Any = ((0, None, 0),)
-    bond_length: float =1.0
-    wiggle_dist: float =0.025
+class ChainsSelectiveRepAttr(SimAction):
+    chains: Any = ((0, None, False),)
+    bond_length: float = 1.0
+    wiggle_dist: float = 0.25
     stiffness_k: Optional[float] = None
-    repulsion_e: Optional[float] = 2.5,  # TODO: implement np.in
+    repulsion_e: Optional[float] = 1.5  # TODO: implement np.in
     attraction_e: Optional[float] = None
     attraction_r: Optional[float] = None
     selective_attraction_e: Optional[float] = None
@@ -115,12 +115,12 @@ class AddChainsSelectiveRepAttr(SimAction):
 
 
 @dataclass
-class AddChainsHeteropolymerRepAttr(SimAction):
-    chains: Any = ((0, None, 0),)
-    bond_length: float =1.0
-    wiggle_dist: float =0.025
+class ChainsHeteropolymerRepAttr(SimAction):
+    chains: Any = ((0, None, False),)
+    bond_length: float = 1.0
+    wiggle_dist: float = 0.25
     stiffness_k: Optional[float] = None
-    repulsion_e: Optional[float] = 2.5,  # TODO: implement np.in
+    repulsion_e: Optional[float] = 1.5  # TODO: implement np.in
     attraction_e: Optional[float] = None
     attraction_r: Optional[float] = None
     particle_types: Any = None

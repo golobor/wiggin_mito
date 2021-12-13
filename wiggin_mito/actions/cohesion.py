@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from typing import Any
-from ..core import SimAction
+from wiggin.core import SimAction
 
 import polychrom
 import polychrom.forces

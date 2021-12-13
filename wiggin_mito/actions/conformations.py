@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from typing import Union, Tuple, Sequence, Any, Optional
+from typing import Union, Tuple, Sequence, Any, Optional # noqa: F401
 
 import numpy as np
 
@@ -8,26 +8,20 @@ from .. import conformations
 
 from wiggin.core import SimAction
 
-import looplib
-import looplib.looptools
-
-import polychrom
-import polychrom.forces
-
 
 logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
-class GenerateLoopBrushInitialConformation(SimAction):
+class HelicalLoopBrushConformation(SimAction):
     helix_radius: Optional[float] = None
     helix_turn_length: Optional[float] = None
     helix_step: Optional[float] = None
     axial_compression_factor: Optional[float] = None
     random_loop_orientations: bool = True
     
-    _shared = dict(N=None, loops=None)
-
+    _reads_shared = ['N', 'loops']
+    _writes_shared = ['initial_conformation']
 
     def configure(self):
         out_shared = {}
@@ -155,8 +149,16 @@ class GenerateLoopBrushInitialConformation(SimAction):
         return out_shared
 
 
+    def run_init(self, sim):
+        # do not use self.params!
+        # only use parameters from config.action and config.shared
+        sim.set_data(self._shared["initial_conformation"])
+
+        return sim
+
+
 @dataclass
-class GenerateLoopBrushUniformHelixInitialConformation(SimAction):
+class UniformHelicalLoopBrushConformation(SimAction):
     helix_radius: Optional[float] = None
     helix_step: Optional[float] = None
     axial_compression_factor: Optional[float] = None
@@ -164,9 +166,8 @@ class GenerateLoopBrushUniformHelixInitialConformation(SimAction):
     loop_fold: str = "RW"
     chain_bond_length: float = 1.0
     
-    _shared = dict()
-        
-        
+    _reads_shared = ['N', 'loops']
+    _writes_shared = ['initial_conformation']        
 
     def configure(self):
         out_shared = {}
@@ -184,7 +185,7 @@ class GenerateLoopBrushUniformHelixInitialConformation(SimAction):
 
         if n_params not in [0, 2]:
             raise ValueError(
-                "Please specify 0 or 2 out of these four parameters: "
+                "Please specify 0 or 2 out of these three parameters: "
                 "radius, step and axis-to-backbone ratio"
             )
 
@@ -235,4 +236,10 @@ class GenerateLoopBrushUniformHelixInitialConformation(SimAction):
         return out_shared
 
 
+    def run_init(self, sim):
+        # do not use self.params!
+        # only use parameters from config.action and config.shared
+        sim.set_data(self._shared["initial_conformation"])
+
+        return sim
 

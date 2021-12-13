@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import logging
-from typing import Union, Tuple, Sequence, Any, Optional
+from typing import Union, Tuple, Sequence, Any, Optional # noqa: F401
 
 import numpy as np
 
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
-class AddBackboneTethering(SimAction):
+class BackboneTethering(SimAction):
     k: float=15  
 
     _reads_shared = ['backbone']
@@ -40,7 +40,7 @@ class AddBackboneTethering(SimAction):
 
 
 @dataclass
-class AddBackboneAngularTethering(SimAction):
+class BackboneAngularTethering(SimAction):
     angle_wiggle: float = np.pi / 16
 
     _reads_shared = ['backbone']
@@ -62,7 +62,7 @@ class AddBackboneAngularTethering(SimAction):
 
 
 @dataclass
-class AddRootLoopAngularTethering(SimAction):
+class RootLoopBaseAngularTethering(SimAction):
     angle_wiggle: float = np.pi / 16
 
     _reads_shared = ['loops']
@@ -87,7 +87,7 @@ class AddRootLoopAngularTethering(SimAction):
 
 
 @dataclass
-class AddTipsTethering(SimAction):
+class TetherTips(SimAction):
     k: Union[float, Tuple[float, float, float]] = (0, 0, 5)
     particles: Sequence[int] = (0, -1)
     positions: Any = "current"
@@ -98,7 +98,7 @@ class AddTipsTethering(SimAction):
         # only use parameters from self.selfame] and self._shared
 
         sim.add_force(
-            forces.tether_particles(
+            polychrom.forces.tether_particles(
                 sim_object=sim,
                 particles=self.particles,
                 k=self.k,
@@ -108,7 +108,7 @@ class AddTipsTethering(SimAction):
 
 
 @dataclass
-class AddStaticCylinderCompression(SimAction):
+class LoopBrushCylinderCompression(SimAction):
     k: Optional[float] = 1.0
     z_min: Optional[Union[float, str]] = None
     z_max: Optional[Union[float, str]] = None
