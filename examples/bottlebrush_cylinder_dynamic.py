@@ -7,7 +7,7 @@ c = wiggin.core.SimConstructor()
 
 c.add_action(
     wiggin.actions.sim.InitializeSimulation(
-        N=20000,
+        N=100000,
         # platform='CPU'
         # GPU='1',
         error_tol=0.01,
@@ -31,14 +31,20 @@ c.add_action(
 )
 
 c.add_action(
+    wiggin_mito.actions.constraints.DynamicLoopBrushCylinderCompression(
+        ts_axial_compression=(200,300),
+        ts_volume_compression=(100,200),
+        axial_compression_factor=4,
+    ),
+)
+
+
+c.add_action(
     wiggin_mito.actions.interactions.HarmonicLoops(
         wiggle_dist=0.25,
     ),
 )
 
-c.add_action(
-    wiggin_mito.actions.constraints.TetherTips(),
-)
 
 c.add_action(
     wiggin.actions.sim.LocalEnergyMinimization()
@@ -54,7 +60,7 @@ c.add_action(
 pprint.pprint(c.action_args)
 
 
-c.auto_name_folder(root_data_folder='./data/bottlebrush_cylinder/')
+c.auto_name_folder(root_data_folder='./data/bottlebrush_cylinder_dynamic/')
 
 c.configure()
 

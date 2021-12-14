@@ -3,7 +3,6 @@ import logging
 
 import numpy as np
 
-import polychrom
 from polychrom.forces import openmm
 
 
@@ -432,41 +431,50 @@ def heteropolymer_quartic_repulsive_attractive(
     return force
 
 
-def cylindrical_confinement_2(
+def cylindrical_confinement(
     sim_object,
-    r,
+    r=None,
+    per_particle_volume=None,
+    bottom=0,
+    top=1000,
     k=1.0,
     transition_width=3,
-    top=None,
-    bottom=None,
     name="cylindrical_confinement",
 ):
+    force_expression = (
+        "kT * k * ("
+        "   step(dr)  * dr  * dr * dr  / (dr * dr + t*t)"
+        " + step(dZb) * dZb * dZb * dZb / (dZb * dZb + t*t)"
+        " + step(dZt) * dZt * dZt * dZt / (dZt * dZt + t*t)"
+        ");"
+        "dr = sqrt(x^2 + y^2) / l_unit - r;"
+        "dZt = z / l_unit - top;"
+        "dZb = bottom - z / l_unit;"   
+    )
 
-    if bottom is not None and top is not None:
-        force = openmm.CustomExternalForce(
-            "kT * k * ("
-            "   step(dr)  * dr  * dr * dr  / (dr * dr + t*t)"
-            " + step(dZb) * dZb * dZb * dZb / (dZb * dZb + t*t)"
-            " + step(dZt) * dZt * dZt * dZt / (dZt * dZt + t*t)"
-            ");"
-            "dr = sqrt(x^2 + y^2) - r;"
-            "dZt = z - top;"
-            "dZb = bottom - z;"
-        )
-        force.addGlobalParameter("top", top * sim_object.conlen)
-        force.addGlobalParameter("bottom", bottom * sim_object.conlen)
-    else:
-        force = openmm.CustomExternalForce(
-            "kT * k * step(dr) * dr * dr * dr/(dr*dt+t*t);" "dr = sqrt(x^2 + y^2) - r"
-        )
-    force.name = name
+
+    if (r is None) == (per_particle_volume is None):
+        raise ValueError('Please, provide either per particle volume or r')
+    elif r is not None: 
+        force = openmm.CustomExternalForce(force_expression)
+        force.addGlobalParameter("r", r)
+    elif per_particle_volume is not None:
+        force_expression += "r=sqrt( (ppv * N) / (top - bottom) / 3.1415926536);"
+        force = openmm.CustomExternalForce(force_expression)
+        force.addGlobalParameter("ppv", per_particle_volume)
+        force.addGlobalParameter("N", sim_object.N)
+        
+    force.addGlobalParameter("bottom", bottom)
+    force.addGlobalParameter("top", top)
+
+    force.addGlobalParameter("k", k)
+    force.addGlobalParameter("kT", sim_object.kT)
+    force.addGlobalParameter("t", transition_width)
+    force.addGlobalParameter("l_unit", sim_object.conlen)
 
     for i in range(sim_object.N):
         force.addParticle(i, [])
 
-    force.addGlobalParameter("k", k / sim_object.conlen)
-    force.addGlobalParameter("kT", sim_object.kT)
-    force.addGlobalParameter("r", r * sim_object.conlen)
-    force.addGlobalParameter("t", transition_width * sim_object.conlen)
+    force.name = name
 
     return force
