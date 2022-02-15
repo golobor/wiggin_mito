@@ -20,6 +20,7 @@ class SingleLayerLoopPositions(SimAction):
     loop_gamma_k: float = 1
     loop_spacing: int = 1
     chain_idxs: Optional[Sequence[int]] = None
+    loop_spacing_distr: str = 'uniform'
 
     _reads_shared = ['N', 'chains']
     _writes_shared = ['loops', 'backbone']
@@ -46,10 +47,15 @@ class SingleLayerLoopPositions(SimAction):
                     looplib.random_loop_arrays.exponential_loop_array(
                         chain_len,
                         self.loop_size,
-                        self.loop_spacing
+                        self.loop_spacing,
+                        loop_spacing_distr=self.loop_spacing_distr,
                     )
                 )
             else:
+                if self.loop_spacing_distr != 'uniform':
+                    raise ValueError(
+                        'Non-uniformly distributed spacers with '
+                        'gamma-distributed loops are currently not implemented :(')
                 loops.append(
                     looplib.random_loop_arrays.gamma_loop_array(
                         chain_len,
