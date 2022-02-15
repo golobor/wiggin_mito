@@ -7,7 +7,7 @@ c = wiggin.core.SimConstructor()
 
 c.add_action(
     wiggin.actions.sim.InitializeSimulation(
-        N=100000,
+        N=500*750,
         # platform='CPU'
         # GPU='1',
         error_tol=0.01,
@@ -22,7 +22,9 @@ c.add_action(
 )
 
 c.add_action(
-    wiggin_mito.actions.loops.SingleLayerLoopPositions(loop_size=400),
+    wiggin_mito.actions.loops.SingleLayerLoopPositions(
+        loop_size=500,
+        loop_spacing=5),
 )
 
 c.add_action(
@@ -32,9 +34,9 @@ c.add_action(
 
 c.add_action(
     wiggin_mito.actions.constraints.DynamicLoopBrushCylinderCompression(
-        ts_axial_compression=(200,300),
-        ts_volume_compression=(100,200),
-        axial_compression_factor=4,
+        ts_axial_compression=(200, 400),
+        ts_volume_compression=(100, 200),
+        axial_compression_factor=16,
     ),
 )
 
@@ -52,7 +54,7 @@ c.add_action(
 
 c.add_action(
     wiggin.actions.sim.BlockStep(
-        num_blocks=1000,
+        num_blocks=5000,
     ),
 )
 
