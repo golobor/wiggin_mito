@@ -106,7 +106,7 @@ class LoopBrushCylinderCompression(SimAction):
     z_min: Optional[Union[float, str]] = None
     z_max: Optional[Union[float, str]] = None
     r: Optional[float] = None 
-    per_particle_volume: Optional[float] = 1.5 * 1.5 * 1.5
+    per_particle_volume: Optional[float] = 1.25 * 1.25 * 1.25
         
     _reads_shared = ['N', 'backbone', 'initial_conformation']
 
@@ -173,9 +173,9 @@ class LoopBrushCylinderCompression(SimAction):
 class DynamicLoopBrushCylinderCompression(SimAction):
     ts_axial_compression: Optional[Tuple[int, int]] = (100, 200)
     ts_volume_compression: Optional[Tuple[int, int]] = (100, 200)
-    axial_compression_factor: Optional[float] = 1.0 
     per_particle_volume: Optional[float] = 1.25 * 1.25 * 1.25
     k_confinement: Optional[float] = 1.0
+    axial_length_final: Optional[float] = None
 
     _reads_shared = ['N', 'initial_conformation']
 
@@ -187,7 +187,7 @@ class DynamicLoopBrushCylinderCompression(SimAction):
         top_init = coords[:, 2].max()
         r_init = ((coords[:, :2] ** 2).sum(axis=1) ** 0.5).max()
         ppv_init = np.pi * r_init * r_init * (top_init - bottom_init) / N
-        axial_length_final = (top_init - bottom_init) / self.axial_compression_factor
+        axial_length_final = self.axial_length_final
 
         new_actions.append(
             LoopBrushCylinderCompression(
@@ -226,7 +226,7 @@ class DynamicLoopBrushCylinderCompression(SimAction):
                 param='ppv',
                 ts=self.ts_volume_compression,
                 vals=[ppv_init, self.per_particle_volume],
-                power=1/2,
+                power=1/4,
             ).rename('UpdateConfinementVolume')
         )
 
