@@ -588,7 +588,7 @@ def brownian_bridge(N, ndim=1, step_size=1.0, start=0, end=0):
     return d
 
 
-def make_random_loopbrush(L, loops):
+def make_random_loopbrush(L, loops, end=None):
     """
     Generate a conformation of a loop brush with a helically folded backbone.
     In this conformation, loops are folded in half and project radially
@@ -625,7 +625,10 @@ def make_random_loopbrush(L, loops):
         bbidxs = range(L)
     bb_len = len(bbidxs)
 
-    coords[bbidxs] = polychrom.starting_conformations.create_random_walk(1.0, bb_len)
+    if end is None:
+        coords[bbidxs] = polychrom.starting_conformations.create_random_walk(bb_len)
+    else:
+        coords[bbidxs] = brownian_bridge(bb_len, ndim=3, start=[0,0,0], end=end)
 
     for i in range(len(root_loops)):
         coords[loopstarts[i] : loopends[i] + 1] = brownian_bridge(
