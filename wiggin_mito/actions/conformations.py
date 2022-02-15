@@ -243,3 +243,31 @@ class UniformHelicalLoopBrushConformation(SimAction):
 
         return sim
 
+
+@dataclass
+class RWLoopBrushConformation(SimAction):
+    end: Optional[Tuple[float, float, float]] = None
+
+    _reads_shared = ['N', 'loops']
+    _writes_shared = ['initial_conformation']        
+
+    def configure(self):
+        out_shared = {}
+
+        out_shared[
+            "initial_conformation"
+        ] = conformations.make_random_loopbrush(
+            L=self._shared["N"],
+            loops=self._shared["loops"],
+            end=self.end
+        )
+
+        return out_shared
+
+
+    def run_init(self, sim):
+        # do not use self.params!
+        # only use parameters from config.action and config.shared
+        sim.set_data(self._shared["initial_conformation"])
+
+        return sim
