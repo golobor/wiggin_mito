@@ -7,6 +7,7 @@ import numpy as np
 from .. import forces
 
 from wiggin.core import SimAction
+import wiggin.forces
 
 import looplib
 import looplib.looptools
@@ -58,7 +59,7 @@ class RootLoopSeparator(SimAction):
         root_loop_spacer_lens = root_loop_spacers[:, 1] - root_loop_spacers[:, 0]
 
         sim.add_force(
-            forces.harmonic_bonds(
+            wiggin.forces.adjustable_harmonic_bonds(
                 sim_object=sim,
                 bonds=root_loop_spacers,
                 bondWiggleDistance=self.wiggle_dist,
